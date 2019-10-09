@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<style>
+    .container{
+        margin: auto;
+        border: 5px solid black;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .warm{
+        background-color: red;
+    }
+    .warm2{
+        background-color: blue;
+    }
+    .food{
+        background-color: green;
+    }
+    #you-lose{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 500px;
+        display: none;
+    }
+    h1{
+        border: 5px solid #ff6631;
+        width: 100%;
+        padding: 10px 40px;
+        color: #a42dff;
+        font-size: 130px;
+        text-transform: uppercase;
+        text-align: center;
+        margin: 0px;
+    }
+    button{
+        width: 118%;
+        height: 200px;
+        perspective: 100px;
+        color: #55e892;
+        background-color: #1f6aee;
+        border: 20px solid #d4ff00;
+        font-size: 40px;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+    button:focus{
+        outline: none;
+    }
+    button:hover{
+        color: #d4ff00;
+        background-color: #55e892;
+        border: 20px solid #1f6aee;
+    }
+</style>
+    <div class="container"></div>
+    <div id="you-lose">
+        <h1 id="playerName">you lose</h1>
+        <button onclick="game.newGame()">try again</button>
+    </div>
+<script type="text/javascript" src="main.js"></script>
+</body>
+</html>
