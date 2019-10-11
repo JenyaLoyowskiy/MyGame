@@ -1,40 +1,38 @@
 class Game {
-    constructor(size_x = 20, size_y = 20, scale = 5, speed = 100) {
+    constructor(size_x = 20, size_y = 20, scale = 5, speed = 100, players = 1) {
         this.width = size_x;
         this.height = size_y;
         this.speed = speed;
         this.scale = scale;
+        this.playersCount = players;
         this.container = document.querySelector('.container');
-        this.warm = {
-            body:[{ x: 3 , y: 0 },{ x: 2 , y: 0 },{ x: 1 , y: 0 }],
-            direction: 'right',
-            name:'player 1'
-        };
-        this.warm2 = {
-            body:[{ x: size_x - 3 , y: 0 },{ x: size_x - 2 , y: 0 },{ x: size_x - 1 , y: 0 }],
-            direction: 'left',
-            name:'player 2'
-        };
         this.players = [
             {
                 playerName:'Player1',
                 warmBody:[{ x: 3 , y: 0 },{ x: 2 , y: 0 },{ x: 1 , y: 0 }],
                 direction: 'right',
+                className:'red',
+                isPlaying: true
             },{
-                playerName:'Player2',
+                playerName:'jfheighbjkdfhgjk',
                 warmBody:[{ x: size_x - 3 , y: 0 },{ x: size_x - 2 , y: 0 },{ x: size_x - 1 , y: 0 }],
                 direction: 'left',
+                className:'blue',
+                isPlaying:true
             },{
                 playerName:'Player3',
                 warmBody:[{ x: 3 , y: size_y - 1 },{ x: 2 , y: size_y - 1 },{ x: 1 , y: size_y - 1 }],
                 direction: 'right',
+                className:'yellow',
+                isPlaying: true
             },{
                 playerName:'Player4',
                 warmBody:[{ x: size_x - 3 , y: size_y - 1 },{ x: size_x - 2 , y: size_y - 1 },{ x: size_x - 1 , y: size_y - 1 }],
                 direction: 'left',
+                className:'orange',
+                isPlaying: true
             }
         ];
-        this.winner = {};
         this.food = [{
             x: Math.floor(Math.random()*this.width),
             y: Math.floor(Math.random()*this.height)
@@ -44,9 +42,10 @@ class Game {
         this.drawField();
         this.checkDirection();
         this.warmStep.bind(this);
-        this.isPlaying = setInterval(()=>{
-            this.warmStep(this.warm, 'warm');
-            this.warmStep(this.warm2, 'warm2');
+        this._isPlaying = setInterval(()=>{
+            for (let i = 0; i <= players - 1; i++) {
+                this.warmStep(this.players[i], this.players[i].className);
+            }
         }, this.speed);
         this.spawnFood();
     }
@@ -80,38 +79,44 @@ class Game {
         document.addEventListener('keydown', (key)=>{
             // setTimeout(()=>{
                 switch (key.keyCode) {
-                    case 40: if (this.warm.direction == 'top'){break}else{this.warm.direction = 'bottom'; break}
-                    case 38: if (this.warm.direction == 'bottom'){break}else{this.warm.direction = 'top'; break}
-                    case 37: if (this.warm.direction == 'right'){break}else{this.warm.direction = 'left'; break}
-                    case 39: if (this.warm.direction == 'left'){break}else{this.warm.direction = 'right'; break}
-                    case 83: if (this.warm2.direction == 'top'){break}else{this.warm2.direction = 'bottom'; break}
-                    case 87: if (this.warm2.direction == 'bottom'){break}else{this.warm2.direction = 'top'; break}
-                    case 65: if (this.warm2.direction == 'right'){break}else{this.warm2.direction = 'left'; break}
-                    case 68: if (this.warm2.direction == 'left'){break}else{this.warm2.direction = 'right'; break}
+                    case 40: if (this.players[0].direction == 'top'){break}else{this.players[0].direction = 'bottom'; break}
+                    case 38: if (this.players[0].direction == 'bottom'){break}else{this.players[0].direction = 'top'; break}
+                    case 37: if (this.players[0].direction == 'right'){break}else{this.players[0].direction = 'left'; break}
+                    case 39: if (this.players[0].direction == 'left'){break}else{this.players[0].direction = 'right'; break}
+                    case 83: if (this.players[1].direction == 'top'){break}else{this.players[1].direction = 'bottom'; break}
+                    case 87: if (this.players[1].direction == 'bottom'){break}else{this.players[1].direction = 'top'; break}
+                    case 65: if (this.players[1].direction == 'right'){break}else{this.players[1].direction = 'left'; break}
+                    case 68: if (this.players[1].direction == 'left'){break}else{this.players[1].direction = 'right'; break}
+                    case 53: if (this.players[2].direction == 'top'){break}else{this.players[2].direction = 'bottom'; break}
+                    case 56: if (this.players[2].direction == 'bottom'){break}else{this.players[2].direction = 'top'; break}
+                    case 52: if (this.players[2].direction == 'right'){break}else{this.players[2].direction = 'left'; break}
+                    case 54: if (this.players[2].direction == 'left'){break}else{this.players[2].direction = 'right'; break}
                 }
             // },1000);
         })
     };
 
     warmStep(warm, className){
-        let body = warm.body;
-        let head = warm.body[0];
-        this.drawElement(body, className);
-        if (head.y == this.food[0].y && head.x == this.food[0].x) {
-            body.push({x: (body[body.length - 1].x - body[body.length - 2].x) + body[body.length - 1].x, y: (body[body.length - 1].y - body[body.length - 2].y) + body[body.length - 1].y});
-            console.log(body.length);
-            this.clearField('food');
-            this.food[0].x = Math.floor(Math.random()*20);
-            this.food[0].y = Math.floor(Math.random()*20);
-            this.spawnFood();
+        if (warm.isPlaying) {
+            let body = warm.warmBody;
+            let head = warm.warmBody[0];
+            this.drawElement(body, className);
+            if (head.y == this.food[0].y && head.x == this.food[0].x) {
+                body.push({x: (body[body.length - 1].x - body[body.length - 2].x) + body[body.length - 1].x, y: (body[body.length - 1].y - body[body.length - 2].y) + body[body.length - 1].y});
+                // console.log(body.length);
+                this.clearField('food');
+                this.food[0].x = Math.floor(Math.random()*20);
+                this.food[0].y = Math.floor(Math.random()*20);
+                this.spawnFood();
+            }
+            this.moveBody(warm);
+            switch (warm.direction) {
+                case 'bottom': head.y++; break;
+                case 'top': head.y--; break;
+                case 'left': head.x--; break;
+                case 'right': head.x++; break;
+            }
         }
-        this.moveBody(head, body);
-        switch (warm.direction) {
-            case 'bottom': head.y++; break;
-            case 'top': head.y--; break;
-            case 'left': head.x--; break;
-            case 'right': head.x++; break;
-        };
     };
 
     clearField(element_class){
@@ -120,31 +125,34 @@ class Game {
         })
     };
 
-    moveBody(head, body){
+    moveBody(warm){
+        let head = warm.warmBody[0];
+        let body = warm.warmBody;
         body.splice(body.length - 1, 1);
         body.splice(1,0,{x:head.x, y:head.y});
         if (body.filter(el => el.x == head.x && el.y == head.y).length == 3) {
-            this.tryAgain();
+            this.playersCount--;
+            this.playersCount != 1 ? warm.isPlaying = false : (warm.isPlaying = false, this.tryAgain());
+            console.log(this.playersCount);
         }
     }
 
     spawnFood(){
-        this.foodSpanwInterval = setTimeout(()=>{
-            this.drawElement(this.food, 'food');
-        }, Math.floor(Math.random()*10000))
+        this.foodSpanwInterval = this.playersCount < 2 ? setTimeout(()=>{this.drawElement(this.food, 'food')}, Math.floor(Math.random()*10000)) : setInterval(()=>{this.drawElement(this.food, 'food')}, 2000);
     }
 
     tryAgain(){
-        clearInterval(this.isPlaying);
-        clearTimeout(this.foodSpanwInterval);
-        document.getElementById("playerName").innerHTML = `Player`;
+        clearInterval(this._isPlaying);
+        this.playersCount < 2 ? clearTimeout(this.foodSpanwInterval) : clearInterval(this.foodSpanwInterval);
+        let winnerName = this.players.filter(el=> el.isPlaying == true);
+        document.getElementById("playerName").innerHTML = `${winnerName[0].playerName} wins`;
         document.getElementById('you-lose').style.display = 'block';
     }
 
     newGame(){
-        game = new Game(20, 30, 2);
+        game = new Game(50, 40, 2, 50, 2);
         document.getElementById('you-lose').style.display = 'none';
     }
 }
 
-let game = new Game(20, 30, 2, 50);
+let game = new Game(50, 40, 2, 50, 2);
