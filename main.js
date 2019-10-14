@@ -2,38 +2,52 @@ class Game {
     constructor(size_x = 20, size_y = 20, scale = 5, speed = 100, players = 1) {
         this.width = size_x;
         this.height = size_y;
-        this.speed = speed;
         this.scale = scale;
+        this.speed = speed;
         this.playersCount = players;
         this.container = document.querySelector('.container');
-        this.players = [
+        this.playersList = [
             {
-                playerName:'Player1',
+                playerName:'Nazik',
                 warmBody:[{ x: 3 , y: 0 },{ x: 2 , y: 0 },{ x: 1 , y: 0 }],
                 direction: 'right',
                 className:'red',
-                isPlaying: true
+                isPlaying: true,
+                speed: 50
             },{
-                playerName:'jfheighbjkdfhgjk',
+                playerName:'Jenya',
                 warmBody:[{ x: size_x - 3 , y: 0 },{ x: size_x - 2 , y: 0 },{ x: size_x - 1 , y: 0 }],
                 direction: 'left',
                 className:'blue',
-                isPlaying:true
+                isPlaying: true,
+                speed: 50
             },{
                 playerName:'Player3',
                 warmBody:[{ x: 3 , y: size_y - 1 },{ x: 2 , y: size_y - 1 },{ x: 1 , y: size_y - 1 }],
                 direction: 'right',
                 className:'yellow',
-                isPlaying: true
+                isPlaying: true,
+                speed: 50
             },{
                 playerName:'Player4',
                 warmBody:[{ x: size_x - 3 , y: size_y - 1 },{ x: size_x - 2 , y: size_y - 1 },{ x: size_x - 1 , y: size_y - 1 }],
                 direction: 'left',
                 className:'orange',
-                isPlaying: true
+                isPlaying: true,
+                speed: 50
             }
         ];
+        this.players = [];
+        for (let i = 0; i <= players - 1; i++){
+            this.players.push(this.playersList[i]);
+        }
         this.food = [{
+            x: Math.floor(Math.random()*this.width),
+            y: Math.floor(Math.random()*this.height)
+        },{
+            x: Math.floor(Math.random()*this.width),
+            y: Math.floor(Math.random()*this.height)
+        },{
             x: Math.floor(Math.random()*this.width),
             y: Math.floor(Math.random()*this.height)
         }];
@@ -44,7 +58,7 @@ class Game {
         this.warmStep.bind(this);
         this._isPlaying = setInterval(()=>{
             for (let i = 0; i <= players - 1; i++) {
-                this.warmStep(this.players[i], this.players[i].className);
+                    this.warmStep(this.players[i], this.players[i].className);
             }
         }, this.speed);
         this.spawnFood();
@@ -101,14 +115,15 @@ class Game {
             let body = warm.warmBody;
             let head = warm.warmBody[0];
             this.drawElement(body, className);
-            if (head.y == this.food[0].y && head.x == this.food[0].x) {
-                body.push({x: (body[body.length - 1].x - body[body.length - 2].x) + body[body.length - 1].x, y: (body[body.length - 1].y - body[body.length - 2].y) + body[body.length - 1].y});
-                // console.log(body.length);
-                this.clearField('food');
-                this.food[0].x = Math.floor(Math.random()*20);
-                this.food[0].y = Math.floor(Math.random()*20);
-                this.spawnFood();
-            }
+            this.food.forEach(el=>{
+                if (el.x == head.x && el.y == head.y){
+                    body.push({x: (body[body.length - 1].x - body[body.length - 2].x) + body[body.length - 1].x, y: (body[body.length - 1].y - body[body.length - 2].y) + body[body.length - 1].y});
+                    warm.speed += 10;
+                    el.x = Math.floor(Math.random()*this.width);
+                    el.y = Math.floor(Math.random()*this.height);
+                    this.spawnFood();
+                }
+            })
             this.moveBody(warm);
             switch (warm.direction) {
                 case 'bottom': head.y++; break;
@@ -138,15 +153,18 @@ class Game {
     }
 
     spawnFood(){
-        this.foodSpanwInterval = this.playersCount < 2 ? setTimeout(()=>{this.drawElement(this.food, 'food')}, Math.floor(Math.random()*10000)) : setInterval(()=>{this.drawElement(this.food, 'food')}, 2000);
+        // this.foodSpanwInterval = this.playersCount < 2 ? setTimeout(()=>{this.drawElement(this.food, 'food')}, Math.floor(Math.random()*10000)) : setTimeout(()=>{this.drawElement(this.food, 'food')}, 2000);
+        this.foodSpanwInterval = setTimeout(()=>{this.drawElement(this.food, 'food')}, this.playersCount < 2 ? Math.floor(Math.random()*10000) : 0);
     }
 
     tryAgain(){
+        let winner = this.players.filter(el=> el.isPlaying == true);
         clearInterval(this._isPlaying);
-        this.playersCount < 2 ? clearTimeout(this.foodSpanwInterval) : clearInterval(this.foodSpanwInterval);
-        let winnerName = this.players.filter(el=> el.isPlaying == true);
-        document.getElementById("playerName").innerHTML = `${winnerName[0].playerName} wins`;
-        document.getElementById('you-lose').style.display = 'block';
+        winner.isPlaying = false;
+        console.log(winner.isPlaying, winner);
+        clearTimeout(this.foodSpanwInterval);
+        document.getElementById("playerName").innerHTML = `${winner[0].playerName} wins`;
+        document.getElementById('you-lose').style.display = 'flex';
     }
 
     newGame(){
@@ -155,4 +173,4 @@ class Game {
     }
 }
 
-let game = new Game(50, 40, 2, 50, 2);
+let game = new Game(50, 40, 2,50, 4);
